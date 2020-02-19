@@ -165,7 +165,9 @@ ReturnStatus RCoreRuntime::execute() {
     if (this->rResults != nullptr) PrintValue(this->rResults);
 
     // free this->rFunc
+    this->rLog->log(RServerLogLevel::LOGS, "try free function sexp point");
     UNPROTECT_PTR(this->rFunc);
+    this->rLog->log(RServerLogLevel::LOGS, "try free argument sexp point");
     UNPROTECT_PTR(this->rArgument);
 
     if (errorOccurred) {
@@ -256,7 +258,9 @@ ReturnStatus RCoreRuntime::getResults(CallResponse *results) {
 }
 
 void RCoreRuntime::cleanup() {
+    this->rLog->log(RServerLogLevel::LOGS, "try free result sexp point");
     UNPROTECT_PTR(this->rResults);
+    this->rLog->log(RServerLogLevel::LOGS, "try free r code sexp point");
     UNPROTECT_PTR(this->rCode);
     // also clear the subtype vector
     this->returnSubType.clear();
@@ -299,7 +303,8 @@ std::string RCoreRuntime::getLoadSelfRefCmd() {
 
 // TODO: private function, may use Rcpp instead of
 void RCoreRuntime::loadRCmd(const std::string &cmd) {
-    SEXP cmdSexp, cmdexpr;
+    SEXP cmdSexp = NULL;
+    SEXP cmdexpr = NULL;
     int i, status = 0;
 
     try {
@@ -317,11 +322,13 @@ void RCoreRuntime::loadRCmd(const std::string &cmd) {
                 this->rLog->log(RServerLogLevel::FATALS, "Cannot process R cmd %s", cmd.c_str());
             }
         }
-
+        this->rLog->log(RServerLogLevel::LOGS, "try free init sexp point");
         UNPROTECT_PTR(cmdSexp);
+        this->rLog->log(RServerLogLevel::LOGS, "try free init cmd sexp point");
         UNPROTECT_PTR(cmdexpr);
     }
     catch (std::exception &e) {
+        this->rLog->log(RServerLogLevel::LOGS, "try free exception init sexp point");
         UNPROTECT_PTR(cmdSexp);
         UNPROTECT_PTR(cmdexpr);
         throw e;
@@ -352,8 +359,9 @@ running in a container. I think -1 is equivalent to no limit.
     if (status != PARSE_OK) {
         this->rLog->log(RServerLogLevel::ERRORS, "Cannot parse user code %s", code.c_str());
     }
-
+    this->rLog->log(RServerLogLevel::LOGS, "try free r body sexp point");
     UNPROTECT_PTR(rbody);
+    this->rLog->log(RServerLogLevel::LOGS, "try free r tmp sexp point");
     UNPROTECT_PTR(tmp);
     return ReturnStatus::OK;
 }
