@@ -171,10 +171,16 @@ ReturnStatus RCoreRuntime::execute() {
     }
 	// free this->rFunc
     this->rLog->log(RServerLogLevel::LOGS, "try free function sexp point");
-    UNPROTECT_PTR(this->rFunc);
+	if (this->rFunc != nullptr){
+		UNPROTECT_PTR(this->rFunc);
+		this->rFunc = nullptr;
+	}
     this->rLog->log(RServerLogLevel::LOGS, "try free argument sexp point");
-    UNPROTECT_PTR(this->rArgument);
-
+	if (this->rArgument != nullptr){
+		UNPROTECT_PTR(this->rArgument);
+		this->rArgument = nullptr;
+	}
+   
     return ReturnStatus::OK;
 }
 
@@ -260,9 +266,15 @@ ReturnStatus RCoreRuntime::getResults(CallResponse *results) {
 
 void RCoreRuntime::cleanup() {
     this->rLog->log(RServerLogLevel::LOGS, "try free result sexp point");
-    UNPROTECT_PTR(this->rResults);
+	if (this->rResults != nullptr){
+		UNPROTECT_PTR(this->rResults);
+		this->rResults = nullptr;
+	}
     this->rLog->log(RServerLogLevel::LOGS, "try free r code sexp point");
-    UNPROTECT_PTR(this->rCode);
+	if (this->rCode != nullptr){
+		UNPROTECT_PTR(this->rCode);
+		this->rCode = nullptr;
+	}
     // also clear the subtype vector
     this->returnSubType.clear();
 
