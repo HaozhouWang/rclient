@@ -46,6 +46,7 @@ class RServerRPC final : public PLContainer::Service {
    private:
     PlcRuntime *runtime;
     RServerLog *rLog;
+	std::mutex mtx;
 };
 
 class RServer {

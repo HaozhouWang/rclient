@@ -112,6 +112,7 @@ Status RServerRPC::FunctionCall(ServerContext *context, const CallRequest *callR
                                 CallResponse *result) {
     (void)context;
     try {
+		this->mtx.lock();
         this->rLog->log(RServerLogLevel::LOGS, "start to process query");
         this->runtime->prepare(callRequest);
         this->runtime->execute();
@@ -119,6 +120,7 @@ Status RServerRPC::FunctionCall(ServerContext *context, const CallRequest *callR
         this->runtime->cleanup();
         result->set_logs(this->rLog->getLogBuffer());
         this->rLog->resetLogBuffer();
+		this->mtx.unlock();
     }
     catch (RServerFatalException &e) {
         Error *err = result->mutable_exception();
