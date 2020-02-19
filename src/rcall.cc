@@ -164,15 +164,16 @@ ReturnStatus RCoreRuntime::execute() {
 
     if (this->rResults != nullptr) PrintValue(this->rResults);
 
-    // free this->rFunc
-    this->rLog->log(RServerLogLevel::LOGS, "try free function sexp point");
-    UNPROTECT_PTR(this->rFunc);
-    this->rLog->log(RServerLogLevel::LOGS, "try free argument sexp point");
-    UNPROTECT_PTR(this->rArgument);
+
 
     if (errorOccurred) {
         this->rLog->log(RServerLogLevel::ERRORS, "Unable execute user code");
     }
+	// free this->rFunc
+    this->rLog->log(RServerLogLevel::LOGS, "try free function sexp point");
+    UNPROTECT_PTR(this->rFunc);
+    this->rLog->log(RServerLogLevel::LOGS, "try free argument sexp point");
+    UNPROTECT_PTR(this->rArgument);
 
     return ReturnStatus::OK;
 }
