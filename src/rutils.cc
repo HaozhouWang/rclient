@@ -25,7 +25,7 @@ RServerLog::RServerLog(RServerWorkingMode mode, std::string filename) {
 
 void RServerLog::log(RServerLogLevel lvl, const char *format, ...) {
     char buf[MAX_MESSAGE_LINE_LENGTH];
-    std::string log = "\nLog from R Server\n: ";
+    std::string log = "\nLog from R Server: \n Type:";
     if (lvl >= this->logLevel) {
         va_list ap;
         va_start(ap, format);

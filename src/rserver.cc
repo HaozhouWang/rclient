@@ -111,9 +111,15 @@ void RServerRPC::initRCore() {
 Status RServerRPC::FunctionCall(ServerContext *context, const CallRequest *callRequest,
                                 CallResponse *result) {
     try {
-        if (!this->mtx.try_lock()){
-			this->rLog->log(RServerLogLevel::ERRORS, "The previous query is still running, cannot accpet new query");
-		}
+        if (!this->mtx.try_lock()) {
+            if (context->IsCancelled()) {
+                this->rLog->log(RServerLogLevel::WARNINGS,
+                                "this query has been cancelled by client due to timeout");
+                return Status::CANCELLED;
+            }
+            this->rLog->log(RServerLogLevel::ERRORS,
+                            "The previous query is still running, cannot accpet new query.");
+        }
         this->rLog->log(RServerLogLevel::LOGS, "start to process query");
         this->runtime->prepare(callRequest);
         this->runtime->execute();
