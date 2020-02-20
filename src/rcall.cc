@@ -164,23 +164,17 @@ ReturnStatus RCoreRuntime::execute() {
 
     if (this->rResults != nullptr) PrintValue(this->rResults);
 
+    // free this->rFunc
+    UNPROTECT_PTR(this->rFunc);
+    this->rFunc = nullptr;
 
+    UNPROTECT_PTR(this->rArgument);
+    this->rArgument = nullptr;
 
     if (errorOccurred) {
         this->rLog->log(RServerLogLevel::ERRORS, "Unable execute user code");
     }
-	// free this->rFunc
-    this->rLog->log(RServerLogLevel::LOGS, "try free function sexp point");
-	if (this->rFunc != nullptr){
-		UNPROTECT_PTR(this->rFunc);
-		this->rFunc = nullptr;
-	}
-    this->rLog->log(RServerLogLevel::LOGS, "try free argument sexp point");
-	if (this->rArgument != nullptr){
-		UNPROTECT_PTR(this->rArgument);
-		this->rArgument = nullptr;
-	}
-   
+
     return ReturnStatus::OK;
 }
 
@@ -266,15 +260,15 @@ ReturnStatus RCoreRuntime::getResults(CallResponse *results) {
 
 void RCoreRuntime::cleanup() {
     this->rLog->log(RServerLogLevel::LOGS, "try free result sexp point");
-	if (this->rResults != nullptr){
-		UNPROTECT_PTR(this->rResults);
-		this->rResults = nullptr;
-	}
+    if (this->rResults != nullptr) {
+        UNPROTECT_PTR(this->rResults);
+        this->rResults = nullptr;
+    }
     this->rLog->log(RServerLogLevel::LOGS, "try free r code sexp point");
-	if (this->rCode != nullptr){
-		UNPROTECT_PTR(this->rCode);
-		this->rCode = nullptr;
-	}
+    if (this->rCode != nullptr) {
+        UNPROTECT_PTR(this->rCode);
+        this->rCode = nullptr;
+    }
     // also clear the subtype vector
     this->returnSubType.clear();
 
@@ -335,9 +329,7 @@ void RCoreRuntime::loadRCmd(const std::string &cmd) {
                 this->rLog->log(RServerLogLevel::FATALS, "Cannot process R cmd %s", cmd.c_str());
             }
         }
-        this->rLog->log(RServerLogLevel::LOGS, "try free init sexp point");
         UNPROTECT_PTR(cmdSexp);
-        this->rLog->log(RServerLogLevel::LOGS, "try free init cmd sexp point");
         UNPROTECT_PTR(cmdexpr);
     }
     catch (std::exception &e) {
@@ -372,9 +364,7 @@ running in a container. I think -1 is equivalent to no limit.
     if (status != PARSE_OK) {
         this->rLog->log(RServerLogLevel::ERRORS, "Cannot parse user code %s", code.c_str());
     }
-    this->rLog->log(RServerLogLevel::LOGS, "try free r body sexp point");
     UNPROTECT_PTR(rbody);
-    this->rLog->log(RServerLogLevel::LOGS, "try free r tmp sexp point");
     UNPROTECT_PTR(tmp);
     return ReturnStatus::OK;
 }

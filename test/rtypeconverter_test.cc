@@ -2336,7 +2336,7 @@ TEST_F(RConvTest, RConvArgINTRegressSEVEN) {
     arg->set_name("n");
     arg->set_type(PlcDataType::INT);
     data = arg->mutable_scalarvalue();
-    data->set_intvalue(1000000000);
+    data->set_intvalue(10000000);
 
     EXPECT_EQ(ReturnStatus::OK, core->prepare(request));
     EXPECT_EQ(ReturnStatus::OK, core->execute());
