@@ -111,7 +111,9 @@ void RServerRPC::initRCore() {
 Status RServerRPC::FunctionCall(ServerContext *context, const CallRequest *callRequest,
                                 CallResponse *result) {
     try {
-        this->mtx.lock();
+        if (!this->mtx.try_lock()){
+			this->rLog->log(RServerLogLevel::ERRORS, "The previous query is still running, cannot accpet new query");
+		}
         this->rLog->log(RServerLogLevel::LOGS, "start to process query");
         this->runtime->prepare(callRequest);
         this->runtime->execute();
